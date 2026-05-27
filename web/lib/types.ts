@@ -9,6 +9,7 @@ export type Bed = {
   mattressType: string | null;
   firmness: string | null;
   hasHeadboard: boolean;
+  hasTopper: boolean;
   topperType: string | null;
   width: number | null;
   length: number | null;
@@ -25,5 +26,3 @@ export const MATTRESS_TYPES = [
   'Bonellfederkern',
   'Kaltschaum',
 ] as const;
-
-export const TOPPER_TYPES = ['Visco', 'Kaltschaum', 'Gel', 'Komfortschaum'] as const;

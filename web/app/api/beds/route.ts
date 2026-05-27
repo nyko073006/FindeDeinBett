@@ -30,12 +30,13 @@ export async function GET(req: NextRequest) {
   const mattressType = parseList(params.get('mattressType'));
   if (mattressType.length) where.mattressType = { in: mattressType };
 
-  const topperType = parseList(params.get('topperType'));
-  if (topperType.length) where.topperType = { in: topperType };
-
   const hasHeadboard = params.get('hasHeadboard');
   if (hasHeadboard === 'true') where.hasHeadboard = true;
   if (hasHeadboard === 'false') where.hasHeadboard = false;
+
+  const hasTopper = params.get('hasTopper');
+  if (hasTopper === 'true') where.hasTopper = true;
+  if (hasTopper === 'false') where.hasTopper = false;
 
   const query = params.get('q');
   if (query) where.title = { contains: query };

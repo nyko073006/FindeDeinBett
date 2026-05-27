@@ -22,7 +22,8 @@ model Bed {
   mattressType String? // z.B. Tonnentaschenfederkern, Bonellfederkern, Kaltschaum
   firmness     String? // Haertegrad, z.B. H2, H3, H4
   hasHeadboard Boolean @default(true) // false => "ohne Kopfteil"
-  topperType   String? // z.B. Visco, Kaltschaum, Gel; null => ohne Topper
+  hasTopper    Boolean @default(false) // ist ueberhaupt ein Topper dabei?
+  topperType   String? // konkreter Typ, falls bekannt: Visco, Kaltschaum, Gel ...
   width        Int? // cm
   length       Int? // cm
   color        String?

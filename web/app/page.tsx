@@ -12,9 +12,10 @@ function buildQuery(filters: Filters): string {
   if (filters.maxPrice) params.set('maxPrice', filters.maxPrice);
   if (filters.firmness.length) params.set('firmness', filters.firmness.join(','));
   if (filters.mattressType.length) params.set('mattressType', filters.mattressType.join(','));
-  if (filters.topperType.length) params.set('topperType', filters.topperType.join(','));
   if (filters.headboard === 'with') params.set('hasHeadboard', 'true');
   if (filters.headboard === 'without') params.set('hasHeadboard', 'false');
+  if (filters.topper === 'with') params.set('hasTopper', 'true');
+  if (filters.topper === 'without') params.set('hasTopper', 'false');
   params.set('sort', filters.sort);
   return params.toString();
 }

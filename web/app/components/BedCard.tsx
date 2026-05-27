@@ -58,7 +58,9 @@ export default function BedCard({ bed }: { bed: Bed }) {
           <Badge tone={bed.hasHeadboard ? 'slate' : 'emerald'}>
             {bed.hasHeadboard ? 'Mit Kopfteil' : 'Ohne Kopfteil'}
           </Badge>
-          <Badge tone="slate">{bed.topperType ? `Topper: ${bed.topperType}` : 'Ohne Topper'}</Badge>
+          <Badge tone="slate">
+            {bed.topperType ? `Topper: ${bed.topperType}` : bed.hasTopper ? 'Mit Topper' : 'Ohne Topper'}
+          </Badge>
           {size && <Badge tone="slate">{size}</Badge>}
         </div>
 

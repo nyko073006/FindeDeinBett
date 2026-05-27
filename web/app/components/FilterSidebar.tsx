@@ -1,8 +1,8 @@
 'use client';
 
-import { FIRMNESS_OPTIONS, MATTRESS_TYPES, TOPPER_TYPES } from '@/lib/types';
+import { FIRMNESS_OPTIONS, MATTRESS_TYPES } from '@/lib/types';
 
-export type Headboard = 'all' | 'with' | 'without';
+export type Presence = 'all' | 'with' | 'without';
 export type SortOption = 'price_asc' | 'price_desc' | 'newest';
 
 export type Filters = {
@@ -11,8 +11,8 @@ export type Filters = {
   maxPrice: string;
   firmness: string[];
   mattressType: string[];
-  topperType: string[];
-  headboard: Headboard;
+  headboard: Presence;
+  topper: Presence;
   sort: SortOption;
 };
 
@@ -22,8 +22,8 @@ export const DEFAULT_FILTERS: Filters = {
   maxPrice: '',
   firmness: [],
   mattressType: [],
-  topperType: [],
   headboard: 'all',
+  topper: 'all',
   sort: 'price_asc',
 };
 
@@ -59,6 +59,35 @@ function Checkbox({
       />
       {label}
     </label>
+  );
+}
+
+function RadioGroup({
+  name,
+  value,
+  options,
+  onChange,
+}: {
+  name: string;
+  value: Presence;
+  options: [Presence, string][];
+  onChange: (value: Presence) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      {options.map(([optionValue, label]) => (
+        <label key={optionValue} className="flex cursor-pointer items-center gap-2 text-sm text-slate-700">
+          <input
+            type="radio"
+            name={name}
+            checked={value === optionValue}
+            onChange={() => onChange(optionValue)}
+            className="h-4 w-4 border-slate-300 text-indigo-600 focus:ring-indigo-500"
+          />
+          {label}
+        </label>
+      ))}
+    </div>
   );
 }
 
@@ -118,24 +147,16 @@ export default function FilterSidebar({
         </Section>
 
         <Section title="Kopfteil">
-          <div className="flex flex-col gap-2">
-            {([
+          <RadioGroup
+            name="headboard"
+            value={filters.headboard}
+            options={[
               ['all', 'Alle'],
               ['with', 'Mit Kopfteil'],
               ['without', 'Ohne Kopfteil'],
-            ] as [Headboard, string][]).map(([value, label]) => (
-              <label key={value} className="flex cursor-pointer items-center gap-2 text-sm text-slate-700">
-                <input
-                  type="radio"
-                  name="headboard"
-                  checked={filters.headboard === value}
-                  onChange={() => update({ headboard: value })}
-                  className="h-4 w-4 border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                />
-                {label}
-              </label>
-            ))}
-          </div>
+            ]}
+            onChange={(value) => update({ headboard: value })}
+          />
         </Section>
 
         <Section title="Härtegrad">
@@ -165,16 +186,16 @@ export default function FilterSidebar({
         </Section>
 
         <Section title="Topper">
-          <div className="flex flex-col gap-2">
-            {TOPPER_TYPES.map((value) => (
-              <Checkbox
-                key={value}
-                label={value}
-                checked={filters.topperType.includes(value)}
-                onChange={() => update({ topperType: toggle(filters.topperType, value) })}
-              />
-            ))}
-          </div>
+          <RadioGroup
+            name="topper"
+            value={filters.topper}
+            options={[
+              ['all', 'Alle'],
+              ['with', 'Mit Topper'],
+              ['without', 'Ohne Topper'],
+            ]}
+            onChange={(value) => update({ topper: value })}
+          />
         </Section>
 
         <Section title="Sortierung">
