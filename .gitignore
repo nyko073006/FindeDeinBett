@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+web/node_modules/
+
+# Next.js build output
+web/.next/
+web/out/
+web/build/
+web/next-env.d.ts
+*.tsbuildinfo
+
+# Prisma generated client
+web/node_modules/.prisma/
+
+# Local database (regenerate with `prisma db push` + the scraper)
+database.sqlite
+database.sqlite-journal
+*.sqlite
+*.sqlite-journal
+*.db
+
+# Environment files
+.env
+.env*.local
+web/.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+scraper/.venv/
+scraper/venv/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

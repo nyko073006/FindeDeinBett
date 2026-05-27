@@ -1,0 +1,5 @@
+# The mock scraper (main.py) uses only the Python standard library (sqlite3).
+# These are listed for the upcoming real shop scrapers:
+# requests==2.32.3
+# beautifulsoup4==4.12.3
+# playwright==1.48.0

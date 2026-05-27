@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  // Relative to this schema file -> resolves to the repo-root database.sqlite,
+  // the same file the Python scraper writes to.
+  url      = "file:../../database.sqlite"
+}
+
+model Bed {
+  id       Int    @id @default(autoincrement())
+  title    String
+  shop     String
+  price    Float
+  currency String @default("EUR")
+  url      String @unique
+  imageUrl String?
+
+  // Boxspring-spezifische Felder
+  mattressType String? // z.B. Tonnentaschenfederkern, Bonellfederkern, Kaltschaum
+  firmness     String? // Haertegrad, z.B. H2, H3, H4
+  hasHeadboard Boolean @default(true) // false => "ohne Kopfteil"
+  topperType   String? // z.B. Visco, Kaltschaum, Gel; null => ohne Topper
+  width        Int? // cm
+  length       Int? // cm
+  color        String?
+
+  inStock   Boolean  @default(true)
+  scrapedAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP"))
+
+  @@index([price])
+  @@index([firmness])
+  @@index([mattressType])
+}
