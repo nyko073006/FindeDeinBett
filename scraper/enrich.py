@@ -10,7 +10,9 @@ from __future__ import annotations
 import re
 
 _FIRMNESS_RE = re.compile(r"(?<![A-Za-z0-9])H([1-5])\b")
-_SIZE_RE = re.compile(r"(\d{2,3})\s*[x×X]\s*(\d{2,3})")
+_SIZE_RE = re.compile(r"(\d{2,3})\s*(?:cm)?\s*[x×X]\s*(\d{2,3})")
+# "in den Breiten 140 & 180cm" -> Bett gibt es u.a. in dieser Standardgroesse.
+_MULTI_WIDTH_RE = re.compile(r"(\d{2,3})\s*(?:&|und)\s*(\d{2,3})\s*cm")
 
 _COLORS = [
     "anthrazit", "hellgrau", "dunkelgrau", "graphit", "grau",
@@ -34,10 +36,14 @@ def mattress_type(title: str) -> str | None:
         return "7-Zonen-Taschenfederkern" if seven_zones else "Tonnentaschenfederkern"
     if "taschenfederkern" in text:
         return "7-Zonen-Taschenfederkern" if seven_zones else "Tonnentaschenfederkern"
+    if "multipocket" in text or "multi-pocket" in text:  # viele kleine Taschenfedern
+        return "7-Zonen-Taschenfederkern" if seven_zones else "Taschenfederkern"
     if re.search(r"bonn?ell", text):
         return "Bonellfederkern"
     if "kaltschaum" in text:
         return "Kaltschaum"
+    if "federkern" in text:  # generischer Fallback nach den spezifischen Typen
+        return "Federkern"
     return None
 
 
@@ -66,11 +72,16 @@ def topper_type(title: str) -> str | None:
 
 def size(title: str) -> tuple[int | None, int | None]:
     match = _SIZE_RE.search(title)
-    if not match:
-        return (None, None)
-    width, length = int(match.group(1)), int(match.group(2))
-    if 60 <= width <= 220 and 180 <= length <= 220:
-        return (width, length)
+    if match:
+        width, length = int(match.group(1)), int(match.group(2))
+        if 60 <= width <= 220 and 180 <= length <= 220:
+            return (width, length)
+    # Kein "BxL" gefunden: Mehrfach-Breiten wie "140 & 180cm" -> groessere Breite, Laenge 200.
+    multi = _MULTI_WIDTH_RE.search(title)
+    if multi:
+        widths = [int(multi.group(1)), int(multi.group(2))]
+        if all(60 <= w <= 220 for w in widths):
+            return (max(widths), 200)
     return (None, None)
 
 
