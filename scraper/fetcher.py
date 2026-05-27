@@ -18,17 +18,25 @@ DEFAULT_HEADERS = {
 }
 
 
-def fetch(url: str, headers: dict | None = None, retries: int = 3, timeout: int = 25) -> str:
+def _request(url: str, headers: dict | None, retries: int, timeout: int) -> requests.Response:
     merged = {**DEFAULT_HEADERS, **(headers or {})}
     last_error: Exception | None = None
     for attempt in range(retries):
         try:
             response = requests.get(url, headers=merged, timeout=timeout)
             response.raise_for_status()
-            return response.text
+            return response
         except requests.RequestException as error:
             last_error = error
             wait = 2 ** attempt
             print(f"  ! Request fehlgeschlagen ({error}); neuer Versuch in {wait}s", file=sys.stderr)
             time.sleep(wait)
     raise RuntimeError(f"Konnte {url} nach {retries} Versuchen nicht laden: {last_error}")
+
+
+def fetch(url: str, headers: dict | None = None, retries: int = 3, timeout: int = 25) -> str:
+    return _request(url, headers, retries, timeout).text
+
+
+def fetch_bytes(url: str, headers: dict | None = None, retries: int = 3, timeout: int = 30) -> bytes:
+    return _request(url, headers, retries, timeout).content
