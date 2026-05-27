@@ -17,43 +17,24 @@ import json
 import sys
 import time
 
-import requests
 from bs4 import BeautifulSoup
 
 import enrich
 from db import Bed
+from fetcher import fetch
 
 BASE_URL = "https://www.otto.de"
 
-# Zwei Listing-Quellen mit unterschiedlichen Treffermengen -> nach Dedup mehr Produkte.
+# Otto rendert nur ~18 Produkte pro Listing-URL serverseitig (der Rest wird per
+# JS nachgeladen). Mehr Abdeckung holen wir daher ueber mehrere Listing-/Such-
+# URLs und deduplizieren anschliessend nach Produkt-URL.
 SOURCES = [
     "https://www.otto.de/moebel/betten/boxspringbetten/",
     "https://www.otto.de/suche/boxspringbett/",
+    "https://www.otto.de/suche/boxspringbett%20180x200/",
+    "https://www.otto.de/suche/boxspringbett%20ohne%20kopfteil/",
+    "https://www.otto.de/suche/boxspringbett%20h3/",
 ]
-
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (X11; Linux x86_64; rv:123.0) Gecko/20100101 Firefox/123.0"
-    ),
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "de-DE,de;q=0.9",
-}
-
-
-def fetch(url: str, retries: int = 3, timeout: int = 25) -> str:
-    last_error: Exception | None = None
-    for attempt in range(retries):
-        try:
-            response = requests.get(url, headers=HEADERS, timeout=timeout)
-            response.raise_for_status()
-            return response.text
-        except requests.RequestException as error:
-            last_error = error
-            wait = 2 ** attempt
-            print(f"  ! Request fehlgeschlagen ({error}); neuer Versuch in {wait}s", file=sys.stderr)
-            time.sleep(wait)
-    raise RuntimeError(f"Konnte {url} nach {retries} Versuchen nicht laden: {last_error}")
-
 
 def extract_jsonld_products(html: str) -> list[dict]:
     """Alle JSON-LD-Bloecke vom @type 'Product' aus dem HTML lesen."""
@@ -97,6 +78,7 @@ def _to_bed(product: dict) -> Bed | None:
     url = offer.get("url") or product.get("url") or ""
     if url.startswith("/"):
         url = BASE_URL + url
+    url = url.split("?")[0]  # variationId entfernen -> Dedup je Produkt
     if not url.startswith("http"):
         return None
 

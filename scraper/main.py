@@ -10,12 +10,13 @@ Voraussetzung (einmalig): das Prisma-Schema anwenden ->
 
 Danach:
 
-    python scraper/main.py                # echter Otto-Scraper (Standard)
-    python scraper/main.py --source mock  # Demo-/Fallback-Daten
-    python scraper/main.py --source all   # Otto + Mock kombiniert
+    python scraper/main.py                       # Otto (Standard)
+    python scraper/main.py --source ravensberger # nur Ravensberger
+    python scraper/main.py --source all          # alle echten Shops (Otto + Ravensberger)
+    python scraper/main.py --source mock         # Demo-/Fallback-Daten
 
-Neue Shops (IKEA, Ravensberger ...) als eigenes Modul mit `scrape() -> list[Bed]`
-ergaenzen und unten in SCRAPERS eintragen.
+Neue Shops als eigenes Modul mit `scrape() -> list[Bed]` ergaenzen und unten in
+SCRAPERS (und ggf. REAL_SHOPS) eintragen.
 """
 
 from __future__ import annotations
@@ -25,15 +26,20 @@ import argparse
 import db
 import mock
 import otto
+import ravensberger
 
 SCRAPERS = {
     "otto": otto.scrape,
+    "ravensberger": ravensberger.scrape,
     "mock": mock.scrape,
 }
 
+# "all" = echte Shops (ohne Mock-Demodaten).
+REAL_SHOPS = ["otto", "ravensberger"]
+
 
 def collect(source: str) -> list[db.Bed]:
-    names = list(SCRAPERS) if source == "all" else [source]
+    names = REAL_SHOPS if source == "all" else [source]
     beds: list[db.Bed] = []
     for name in names:
         beds.extend(SCRAPERS[name]())
