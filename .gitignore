@@ -12,12 +12,13 @@ web/next-env.d.ts
 # Prisma generated client
 web/node_modules/.prisma/
 
-# Local database (regenerate with `prisma db push` + the scraper)
-database.sqlite
-database.sqlite-journal
-*.sqlite
+# SQLite-Laufzeit-Artefakte (Journal/WAL/SHM) - die eigentliche
+# web/prisma/database.sqlite wird bewusst committet, damit das Vercel-
+# Deployment Daten ausliefert. Update-Workflow: Scraper lokal laufen lassen,
+# DB committen, pushen -> Vercel deployt automatisch neu.
 *.sqlite-journal
-*.db
+*.sqlite-wal
+*.sqlite-shm
 
 # Environment files
 .env

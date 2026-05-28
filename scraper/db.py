@@ -12,8 +12,10 @@ import sys
 from pathlib import Path
 from typing import Any, TypedDict
 
-# database.sqlite liegt im Repo-Root, eine Ebene ueber scraper/.
-DB_PATH = Path(__file__).resolve().parent.parent / "database.sqlite"
+# Die SQLite-Datei liegt unter web/prisma/, damit Prisma sie findet UND sie im
+# Vercel-Deployment des web/-Verzeichnisses enthalten ist. Der Python-Scraper
+# schreibt hier hinein; die Next.js-App liest dieselbe Datei.
+DB_PATH = Path(__file__).resolve().parent.parent / "web" / "prisma" / "database.sqlite"
 
 
 class Bed(TypedDict, total=False):

@@ -4,9 +4,10 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  // Relative to this schema file -> resolves to the repo-root database.sqlite,
-  // the same file the Python scraper writes to.
-  url      = "file:../../database.sqlite"
+  // Liegt im selben Verzeichnis wie dieses Schema. So ist die SQLite-Datei
+  // Teil des Vercel-Deployments (web/ ist Vercel-Root) und der Python-Scraper
+  // schreibt in dieselbe Datei.
+  url      = "file:./database.sqlite"
 }
 
 model Bed {
