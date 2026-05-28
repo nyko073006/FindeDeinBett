@@ -63,7 +63,11 @@ export default function Home() {
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">FindeDeinBett</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          <span className="text-slate-900">Finde</span>
+          <span className="text-amber-500">Dein</span>
+          <span className="text-slate-900">Bett</span>
+        </h1>
         <p className="mt-1 text-slate-600">
           Finde dein perfektes Boxspringbett – gefiltert nach Preis, Härtegrad, Matratzentyp, Topper und Kopfteil.
         </p>
