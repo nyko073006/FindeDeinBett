@@ -11,8 +11,9 @@ Voraussetzung (einmalig): das Prisma-Schema anwenden ->
 Danach:
 
     python scraper/main.py                       # Otto (Standard)
+    python scraper/main.py --source betten       # nur Betten.de
     python scraper/main.py --source ravensberger # nur Ravensberger
-    python scraper/main.py --source all          # alle echten Shops (Otto + Ravensberger)
+    python scraper/main.py --source all          # alle echten Shops (Otto + Betten.de + Ravensberger)
     python scraper/main.py --source feed         # Affiliate-Produktfeed (siehe scraper/feed.py)
     python scraper/main.py --source mock         # Demo-/Fallback-Daten
 
@@ -25,6 +26,7 @@ from __future__ import annotations
 import argparse
 
 import db
+import betten
 import feed
 import mock
 import otto
@@ -33,13 +35,14 @@ import ravensberger
 SCRAPERS = {
     "otto": otto.scrape,
     "ravensberger": ravensberger.scrape,
+    "betten": betten.scrape,
     "feed": feed.scrape,
     "mock": mock.scrape,
 }
 
 # "all" = echte Shops (ohne Mock-Demodaten). 'feed' ist env-abhaengig und daher
 # opt-in: bei konfigurierter Feed-URL hier ergaenzen oder mit --source feed laufen.
-REAL_SHOPS = ["otto", "ravensberger"]
+REAL_SHOPS = ["otto", "ravensberger", "betten"]
 
 
 def collect(source: str) -> list[db.Bed]:
