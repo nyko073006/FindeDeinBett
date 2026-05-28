@@ -1,4 +1,4 @@
-"""FindYourBed – Scraper-Orchestrator.
+"""FindeDeinBett – Scraper-Orchestrator.
 
 Sammelt Boxspringbetten aus einer Quelle und schreibt sie in die zentrale
 SQLite-Datenbank (`database.sqlite` im Repo-Root), die Prisma fuer das
@@ -56,7 +56,7 @@ def collect(source: str) -> list[db.Bed]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="FindYourBed Scraper")
+    parser = argparse.ArgumentParser(description="FindeDeinBett Scraper")
     parser.add_argument(
         "--source",
         choices=[*SCRAPERS, "all"],
