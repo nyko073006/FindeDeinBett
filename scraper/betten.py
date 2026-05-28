@@ -1,9 +1,11 @@
 """Scraper fuer betten.de (Boxspringbetten).
 
 Frei abrufbar, kein Kasada, kein Lazy-Load: die Kategorie /boxspringbetten
-rendert serverseitig ~70 Produkte als Karten (.product-container) mit Titel
+rendert serverseitig die Produktkarten (.product-container) mit Titel
 (img alt), aktuellem Preis (.price-final mit "ab X,XX €"), Bild, Link und
-Verfuegbarkeitstext. Eine Fetch genuegt, keine Pagination.
+Verfuegbarkeitstext. Die Pagination laeuft ueber ?currentPage= und wird
+ueber <link rel="next"> verlinkt - wir folgen dem Link, damit der Scraper
+auch funktioniert, wenn der Katalog auf mehr Seiten waechst.
 """
 
 from __future__ import annotations
@@ -69,30 +71,43 @@ def _parse_card(card) -> Bed | None:
     return bed
 
 
-def scrape(delay: float = 1.5) -> list[Bed]:
+def scrape(delay: float = 1.5, max_pages: int = 20) -> list[Bed]:
     beds: list[Bed] = []
-    seen: set[str] = set()
+    seen_products: set[str] = set()
 
-    for index, source in enumerate(SOURCES):
-        if index:
-            time.sleep(delay)
-        print(f"-> Betten.de: lade {source}")
-        try:
-            html = fetch(source)
-        except RuntimeError as error:
-            print(f"  ! {error}", file=sys.stderr)
-            continue
-        soup = BeautifulSoup(html, "html.parser")
-        cards = soup.select(".product-container")
-        added = 0
-        for card in cards:
-            bed = _parse_card(card)
-            if bed is None or bed["url"] in seen:
-                continue
-            seen.add(bed["url"])
-            beds.append(bed)
-            added += 1
-        print(f"   {added} eindeutige Produkte aus {len(cards)} Karten")
+    for source in SOURCES:
+        next_url: str | None = source
+        visited: set[str] = set()
+        page = 0
+        while next_url and page < max_pages:
+            if next_url in visited:
+                break  # Zyklusschutz
+            visited.add(next_url)
+            if page > 0 or beds:
+                time.sleep(delay)
+            print(f"-> Betten.de: lade {next_url}")
+            try:
+                html = fetch(next_url)
+            except RuntimeError as error:
+                print(f"  ! {error}", file=sys.stderr)
+                break
+
+            soup = BeautifulSoup(html, "html.parser")
+            cards = soup.select(".product-container")
+            added = 0
+            for card in cards:
+                bed = _parse_card(card)
+                if bed is None or bed["url"] in seen_products:
+                    continue
+                seen_products.add(bed["url"])
+                beds.append(bed)
+                added += 1
+            print(f"   {added} neue Produkte aus {len(cards)} Karten")
+
+            nxt = soup.find("link", rel="next") or soup.find("a", rel="next")
+            href = nxt.get("href") if nxt else None
+            next_url = (href if href and href.startswith("http") else BASE_URL + href) if href else None
+            page += 1
 
     print(f"-> Betten.de: {len(beds)} Betten extrahiert.")
     return beds
