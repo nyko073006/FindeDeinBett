@@ -62,15 +62,21 @@ export default function Home() {
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">
+      <header className="mb-10">
+        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
           <span className="text-slate-900">Finde</span>
           <span className="text-amber-500">Dein</span>
           <span className="text-slate-900">Bett</span>
         </h1>
-        <p className="mt-1 text-slate-600">
-          Finde dein perfektes Boxspringbett – gefiltert nach Preis, Härtegrad, Matratzentyp, Topper und Kopfteil.
+        <p className="mt-3 max-w-2xl text-slate-600">
+          Vergleiche Boxspringbetten aus mehreren Online-Shops — gefiltert nach
+          Härtegrad, Matratzentyp, Größe, Topper und Kopfteil.
         </p>
+        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
+          <span>Otto · Betten.de · Ravensberger</span>
+          <span aria-hidden="true">·</span>
+          <span>Wöchentlich aktualisiert</span>
+        </div>
       </header>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
